@@ -165,6 +165,10 @@ public class ProductOrderFragment extends  Fragment {
             public void onResponse(Call<List<ProductInventory>> call, Response<List<ProductInventory>> response) {
 
                 productInventories = response.body();
+
+
+                // refactor this, define the adapter and just pass only the object adapter.
+                // declarea argument of an adapter .. ?.. hm like us
                 productListAdapter = new ProductInventoryListAdapter(context, R.layout.activity_productlist_adapter,productInventories);
 
                 listView.setAdapter(productListAdapter);

@@ -7,8 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.jbnjr.inventorysystem.activity.customer.CustomerActivity;
-import com.jbnjr.inventorysystem.activity.customerinvoice.CustomerInvoiceActivity;
-import com.jbnjr.inventorysystem.activity.customerinvoice.OrderActivity;
+import com.jbnjr.inventorysystem.activity.customerinvoice.SelectionOrderActivity;
 import com.jbnjr.inventorysystem.activity.product.ProductActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         btnCustomerInvoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                Intent intent = new Intent(MainActivity.this, SelectionOrderActivity.class);
                 startActivity(intent);
             }
         });
