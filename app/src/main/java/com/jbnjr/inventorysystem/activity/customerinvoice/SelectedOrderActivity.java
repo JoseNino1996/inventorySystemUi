@@ -1,11 +1,9 @@
 package com.jbnjr.inventorysystem.activity.customerinvoice;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,13 +24,13 @@ public class SelectedOrderActivity  extends AppCompatActivity {
     private ListView lvSelectedOrders;
     private TextView txtAmountDue;
     private List<ProductOrder> productOrderList ;
-    private ProductOrderListAdapter productOrderListAdapter;
+    private  ProductOrderListAdapter productOrderListAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(savedInstanceState == null) {
-            setContentView(R.layout.fragment_selected_orders);
+            setContentView(R.layout.activity_selected_orders);
 
             btnRemove = findViewById(R.id.removeOrder);
             txtAmountDue = findViewById(R.id.txtAmountDue);
@@ -67,6 +65,8 @@ public class SelectedOrderActivity  extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(selectedOrder != null) {
+
+                    SelectionOrderActivity.productOrderMap.remove(selectedOrder.getProduct().getId());
                     productOrderList.remove(selectedOrder);
                     loadSelectedOrders();
                 }

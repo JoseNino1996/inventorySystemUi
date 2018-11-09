@@ -17,15 +17,15 @@ import android.widget.Toast;
 import com.jbnjr.inventorysystem.R;
 import com.jbnjr.inventorysystem.adapters.stock.ProductInventoryListAdapter;
 import com.jbnjr.inventorysystem.api.stock.ProductInventoryApi;
-import com.jbnjr.inventorysystem.api.stock.utilities.ProductInventoryApiUtil;
 import com.jbnjr.inventorysystem.model.customerinvoice.ProductOrder;
-import com.jbnjr.inventorysystem.model.product.Product;
 import com.jbnjr.inventorysystem.model.stock.ProductInventory;
 import com.jbnjr.inventorysystem.retrofit.client.stock.ProductInventoryClient;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +46,7 @@ public class SelectionOrderActivity extends AppCompatActivity {
     private Button btnAdd,btnComplete;
     private SeekBar seekBar;
     private List<ProductOrder> productOrders;
-
+    public static Map<Long,ProductOrder> productOrderMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +54,7 @@ public class SelectionOrderActivity extends AppCompatActivity {
 
             setContentView(R.layout.activity_selection_order);
             lvAvailProducts = findViewById(R.id.lvAvailProducts);
-
+             productOrderMap = new HashMap<>();
             productInventories = new ArrayList<>();
 
             txtDisplayCurrentQuantity = findViewById(R.id.txtCurrentQuantity);
@@ -74,21 +74,22 @@ public class SelectionOrderActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-      loadProducts();
+        getCurrentOrders();
+        loadProducts();
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if(selectedProductInventory != null ) {
-                    if(Integer.parseInt(txtDisplayCurrentQuantity.getText().toString()) > 1) {
-                        ProductOrder productOrder = new ProductOrder();
-                        productOrder.setOrderedQty(Long.parseLong(txtDisplayOrderQuantity.getText().toString()));
-                        productOrder.setPrice(Double.parseDouble(txtProductPrice.getText().toString()));
-                        productOrder.setProduct(selectedProductInventory.getProduct());
-
+                    if(productOrderMap.get(selectedProductInventory.getProduct().getId()) != null) {
+                        Toast.makeText(SelectionOrderActivity.this, "Product is already added!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if(Integer.parseInt(txtDisplayCurrentQuantity.getText().toString()) >= 1) {
+                        ProductOrder productOrder = getProductOrder();
                         productOrders.add(productOrder);
+                        productOrderMap.put(selectedProductInventory.getProduct().getId(), productOrder);
                     } else {
                         Toast.makeText(SelectionOrderActivity.this, "Insufficient stock!", Toast.LENGTH_LONG).show();
                     }
@@ -124,6 +125,7 @@ public class SelectionOrderActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(productOrders.size() >= 1) {
                     Intent intent = new Intent(SelectionOrderActivity.this, SelectedOrderActivity.class);
+
                     intent.putParcelableArrayListExtra("selectedListOfOrders", (ArrayList<? extends Parcelable>) productOrders);
 
                     startActivity(intent);
@@ -145,6 +147,23 @@ public class SelectionOrderActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void getCurrentOrders() {
+        productOrders = new ArrayList<>();
+        for (Map.Entry<Long, ProductOrder> entry :productOrderMap.entrySet())
+        {
+            productOrders.add(entry.getValue());
+        }
+    }
+
+    private ProductOrder getProductOrder() {
+        ProductOrder productOrder = new ProductOrder();
+        productOrder.setOrderedQty(Long.parseLong(txtDisplayOrderQuantity.getText().toString()));
+        productOrder.setPrice(Double.parseDouble(txtProductPrice.getText().toString()));
+        productOrder.setProduct(selectedProductInventory.getProduct());
+
+        return  productOrder;
     }
 
 

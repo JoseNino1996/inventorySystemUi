@@ -23,11 +23,6 @@
         <activity android:name=".activity.customer.ModifyCustomerActivity" />
         <activity android:name=".activity.product.ModifyProductActivity" />
         <activity android:name=".activity.stock.StockInActivity" />
-        <activity android:name=".activity.customerinvoice.CustomerInvoiceActivity" />
-        <activity
-            android:name=".activity.customerinvoice.OrderActivity"
-            android:label="@string/title_activity_order"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activity.customerinvoice.SelectionOrderActivity"></activity>
         <activity android:name=".activity.customerinvoice.SelectedOrderActivity" />
         <activity android:name=".activity.customerinvoice.ConfirmationOrderActivity" />

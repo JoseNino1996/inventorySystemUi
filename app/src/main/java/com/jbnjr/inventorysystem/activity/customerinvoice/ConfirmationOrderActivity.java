@@ -42,7 +42,7 @@ public class ConfirmationOrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            setContentView(R.layout.fragment_invoice);
+            setContentView(R.layout.activity_confirmation_invoice);
 
 
             txtDisplayAmountDue = findViewById(R.id.txtDisplayAmountDue);
