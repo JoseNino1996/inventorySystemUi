@@ -59,10 +59,22 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/btnOpenCustomerInvoice"
+                android:id="@+id/btnCreateTransaction"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Create Transaction" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="86dp"
+            android:background="#ffffff"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnOpenInvoice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Customer's Invoice" />
         </LinearLayout>
 
     </LinearLayout>

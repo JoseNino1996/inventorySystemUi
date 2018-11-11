@@ -23,9 +23,12 @@
         <activity android:name=".activity.customer.ModifyCustomerActivity" />
         <activity android:name=".activity.product.ModifyProductActivity" />
         <activity android:name=".activity.stock.StockInActivity" />
-        <activity android:name=".activity.customerinvoice.SelectionOrderActivity"></activity>
+        <activity android:name=".activity.customerinvoice.SelectionOrderActivity" />
         <activity android:name=".activity.customerinvoice.SelectedOrderActivity" />
         <activity android:name=".activity.customerinvoice.ConfirmationOrderActivity" />
+        <activity android:name=".activity.customerinvoice.InvoiceActivity"></activity>
+        <activity android:name=".activity.customerinvoice.edit.EditCurrentSelectedOrderActivity"/>
+        <activity android:name=".activity.customerinvoice.edit.EditSelectionOrderActivity" />
     </application>
 
 </manifest>

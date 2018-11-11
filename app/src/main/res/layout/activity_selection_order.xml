@@ -17,8 +17,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:background="#769ad0e1"
         android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/containerSelectedOrders">
@@ -54,6 +56,7 @@
             android:text="Current Quantity: "
             android:textColor="#000"
             android:textSize="14sp" />
+
         <TextView
             android:id="@+id/txtDisplayOrderQuantity"
             android:layout_width="match_parent"
@@ -65,8 +68,8 @@
         <SeekBar
             android:id="@+id/seekBarOrderQty"
             android:layout_width="match_parent"
-            android:progressBackgroundTint="#042b54"
-            android:layout_height="40dp" />
+            android:layout_height="40dp"
+            android:progressBackgroundTint="#042b54" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,7 +84,7 @@
 
             <Button
                 android:id="@+id/btnComplete"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Complete" />
@@ -93,7 +96,7 @@
     <LinearLayout
         android:id="@+id/containerSelectedOrders"
         android:layout_width="362dp"
-        android:layout_height="345dp"
+        android:layout_height="293dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
@@ -110,17 +113,17 @@
             android:layout_width="match_parent"
             android:layout_height="39dp"
             android:background="#8ccdde"
-            android:textSize="18sp"
+            android:text="Select a Product"
             android:textColor="#000"
-            android:text="Select a Product" />
+            android:textSize="18sp" />
 
         <ListView
             android:id="@+id/lvAvailProducts"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="#76b8dae4"
-            android:listSelector="#3ec3f4"
 
-            android:layout_height="match_parent" />
+            android:listSelector="#3ec3f4" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

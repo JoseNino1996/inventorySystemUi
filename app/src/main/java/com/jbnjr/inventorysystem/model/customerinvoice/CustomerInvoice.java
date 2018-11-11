@@ -1,11 +1,14 @@
 package com.jbnjr.inventorysystem.model.customerinvoice;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.jbnjr.inventorysystem.model.customer.Customer;
 
 import java.util.Date;
 import java.util.List;
 
-public class CustomerInvoice {
+public class CustomerInvoice  implements Parcelable {
     private Long id;
     private double amountDue;
     private Date date;
@@ -15,6 +18,30 @@ public class CustomerInvoice {
 
     private List<ProductOrder> productOrderList;
 
+    public  CustomerInvoice() {}
+    protected CustomerInvoice(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
+        amountDue = in.readDouble();
+        amountTendered = in.readDouble();
+        customer = in.readParcelable(Customer.class.getClassLoader());
+        productOrderList = in.createTypedArrayList(ProductOrder.CREATOR);
+    }
+
+    public static final Creator<CustomerInvoice> CREATOR = new Creator<CustomerInvoice>() {
+        @Override
+        public CustomerInvoice createFromParcel(Parcel in) {
+            return new CustomerInvoice(in);
+        }
+
+        @Override
+        public CustomerInvoice[] newArray(int size) {
+            return new CustomerInvoice[size];
+        }
+    };
 
     public Long getId() {
         return id;
@@ -43,9 +70,7 @@ public class CustomerInvoice {
     }
 
     public double getAmountDue() {
-        for(ProductOrder productOrder : getProductOrderList()) {
-            amountDue += productOrder.getPrice() * productOrder.getOrderedQty() ;
-        }
+
 
         return amountDue;
     }
@@ -84,4 +109,22 @@ public class CustomerInvoice {
                 '}';
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeDouble(amountDue);
+        dest.writeDouble(amountTendered);
+        dest.writeParcelable(customer, flags);
+        dest.writeTypedList(productOrderList);
+    }
 }
