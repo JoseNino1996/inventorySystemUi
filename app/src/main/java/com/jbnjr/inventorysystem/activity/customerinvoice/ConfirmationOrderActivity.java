@@ -31,7 +31,7 @@ public class ConfirmationOrderActivity extends AppCompatActivity {
     private EditText txtInputAmountTendered, txtInputCustomerId;
     private Customer customer;
     private CustomerApi customerApi;
-    private double amountTendered, amountDue;
+    private double  amountDue;
 
     private List<ProductOrder> productOrderList;
     private CustomerInvoice customerInvoice;
@@ -99,7 +99,7 @@ public class ConfirmationOrderActivity extends AppCompatActivity {
         private void displayInvoice() {
             Intent intent = getIntent();
             productOrderList = intent.getParcelableArrayListExtra("selectedOrders");
-            Double amountDue =intent.getDoubleExtra("amountDue", 0);
+             amountDue =intent.getDoubleExtra("amountDue", 0);
 
             txtDisplayAmountDue.setText(Double.toString(amountDue));
 
