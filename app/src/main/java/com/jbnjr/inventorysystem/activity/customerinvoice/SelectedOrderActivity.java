@@ -66,7 +66,6 @@ public class SelectedOrderActivity  extends AppCompatActivity {
             public void onClick(View v) {
                 if(selectedOrder != null) {
 
-                    SelectionOrderActivity.productOrderMap.remove(selectedOrder.getProduct().getId());
                     productOrderList.remove(selectedOrder);
                     loadSelectedOrders();
                 }
@@ -89,6 +88,16 @@ public class SelectedOrderActivity  extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public  void finish() {
+        Intent intent = new Intent();
+
+        intent.putParcelableArrayListExtra("backSelectedListOfOrders", (ArrayList<? extends Parcelable>) productOrderList);
+        setResult(RESULT_OK, intent);
+        super.finish();
+
     }
 
     private void loadSelectedOrders() {

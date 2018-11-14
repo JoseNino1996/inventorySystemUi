@@ -3,7 +3,6 @@ package com.jbnjr.inventorysystem.activity.customerinvoice;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.jbnjr.inventorysystem.model.stock.ProductInventory;
 import com.jbnjr.inventorysystem.retrofit.client.stock.ProductInventoryClient;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +44,7 @@ public class SelectionOrderActivity extends AppCompatActivity {
     private Button btnAdd,btnComplete;
     private SeekBar seekBar;
     private List<ProductOrder> productOrders;
-    public static Map<Long,ProductOrder> productOrderMap;
+    public static Map<String,ProductOrder> productOrderMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +72,6 @@ public class SelectionOrderActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getCurrentOrders();
         loadProducts();
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -82,16 +79,19 @@ public class SelectionOrderActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if(selectedProductInventory != null ) {
-                    if(productOrderMap.get(selectedProductInventory.getProduct().getId()) != null) {
+                    if(productOrderMap.get(selectedProductInventory.getProduct().getName()) != null) {
                         Toast.makeText(SelectionOrderActivity.this, "Product is already added!", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    if(Integer.parseInt(txtDisplayCurrentQuantity.getText().toString()) >= 1) {
+                    if(Integer.parseInt(txtDisplayCurrentQuantity.getText().toString()) < 1 ||
+                            Integer.parseInt(txtDisplayOrderQuantity.getText().toString()) < 1) {
+
+                        Toast.makeText(SelectionOrderActivity.this, "Invalid Order!", Toast.LENGTH_LONG).show();
+                    } else {
+
                         ProductOrder productOrder = getProductOrder();
                         productOrders.add(productOrder);
-                        productOrderMap.put(selectedProductInventory.getProduct().getId(), productOrder);
-                    } else {
-                        Toast.makeText(SelectionOrderActivity.this, "Insufficient stock!", Toast.LENGTH_LONG).show();
+                        productOrderMap.put(selectedProductInventory.getProduct().getName(), productOrder);
                     }
 
                 }else {
@@ -128,7 +128,7 @@ public class SelectionOrderActivity extends AppCompatActivity {
 
                     intent.putParcelableArrayListExtra("selectedListOfOrders", (ArrayList<? extends Parcelable>) productOrders);
 
-                    startActivity(intent);
+                    startActivityForResult(intent, 1000);
                 }else {
                     Toast.makeText(SelectionOrderActivity.this, "Empty order/s", Toast.LENGTH_LONG).show();
                 }
@@ -149,12 +149,12 @@ public class SelectionOrderActivity extends AppCompatActivity {
         });
     }
 
-    private void getCurrentOrders() {
-        productOrders = new ArrayList<>();
-        for (Map.Entry<Long, ProductOrder> entry :productOrderMap.entrySet())
-        {
-            productOrders.add(entry.getValue());
-        }
+    private void addBackOrderToMap() {
+
+       for(ProductOrder productOrder : productOrders) {
+            productOrderMap.put(productOrder.getProduct().getName(), productOrder);
+
+       }
     }
 
     private ProductOrder getProductOrder() {
@@ -188,8 +188,19 @@ public class SelectionOrderActivity extends AppCompatActivity {
 
             }
         });
+    }
 
 
+    @Override
+    protected  void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        productOrderMap = new HashMap<>();
+        if(resultCode == RESULT_OK && requestCode == 1000) {
+            if(intent.hasExtra("backSelectedListOfOrders")) {
+                productOrders = intent.getParcelableArrayListExtra("backSelectedListOfOrders");
+                addBackOrderToMap();
+
+            }
+        }
     }
 
 
