@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.jbnjr.inventorysystem.R;
 import com.jbnjr.inventorysystem.adapters.stock.ProductInventoryListAdapter;
 import com.jbnjr.inventorysystem.api.stock.ProductInventoryApi;
+import com.jbnjr.inventorysystem.model.customerinvoice.CustomerInvoice;
 import com.jbnjr.inventorysystem.model.customerinvoice.ProductOrder;
 import com.jbnjr.inventorysystem.model.stock.ProductInventory;
 import com.jbnjr.inventorysystem.retrofit.client.stock.ProductInventoryClient;
@@ -45,6 +46,10 @@ public class SelectionOrderActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private List<ProductOrder> productOrders;
     public static Map<String,ProductOrder> productOrderMap;
+
+    private CustomerInvoice customerInvoice;
+
+    private Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,14 +70,36 @@ public class SelectionOrderActivity extends AppCompatActivity {
 
             productOrders = new ArrayList<>();
 
+            intent = getIntent();
 
 
+    }
+
+    // refactor
+
+    private  boolean hasCustomerInvoice() {
+        if(intent.hasExtra("customerInvoice")) {
+            customerInvoice = intent.getParcelableExtra("customerInvoice");
+            return  true;
+        }
+
+        return false;
+    }
+
+    private void setCustomerInvoiceOrdersToThisProductOrders() {
+        productOrders = customerInvoice.getProductOrderList();
+        mapProductOrders();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadProducts();
+
+
+        if(hasCustomerInvoice()) {
+            setCustomerInvoiceOrdersToThisProductOrders();
+        }
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,11 +151,17 @@ public class SelectionOrderActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(productOrders.size() >= 1) {
+
+
                     Intent intent = new Intent(SelectionOrderActivity.this, SelectedOrderActivity.class);
+                    if(hasCustomerInvoice()) {
+                        intent.putExtra("customerInvoice", customerInvoice);
+                        startActivity(intent);
 
-                    intent.putParcelableArrayListExtra("selectedListOfOrders", (ArrayList<? extends Parcelable>) productOrders);
-
-                    startActivityForResult(intent, 1000);
+                    } else {
+                        intent.putParcelableArrayListExtra("selectedListOfOrders", (ArrayList<? extends Parcelable>) productOrders);
+                        startActivityForResult(intent, 1000);
+                    }
                 }else {
                     Toast.makeText(SelectionOrderActivity.this, "Empty order/s", Toast.LENGTH_LONG).show();
                 }
@@ -149,7 +182,8 @@ public class SelectionOrderActivity extends AppCompatActivity {
         });
     }
 
-    private void addBackOrderToMap() {
+
+    private void mapProductOrders() {
 
        for(ProductOrder productOrder : productOrders) {
             productOrderMap.put(productOrder.getProduct().getName(), productOrder);
@@ -197,7 +231,7 @@ public class SelectionOrderActivity extends AppCompatActivity {
         if(resultCode == RESULT_OK && requestCode == 1000) {
             if(intent.hasExtra("backSelectedListOfOrders")) {
                 productOrders = intent.getParcelableArrayListExtra("backSelectedListOfOrders");
-                addBackOrderToMap();
+                mapProductOrders();
 
             }
         }

@@ -26,7 +26,8 @@ public interface CustomerInvoiceApi {
     @DELETE("deleteById")
     Call<CustomerInvoice> deleteById(@Query("id") long id);
 
-
+    @POST("update")
+    Call<CustomerInvoice> update(@Body CustomerInvoice customerInvoice);
 
 
 }

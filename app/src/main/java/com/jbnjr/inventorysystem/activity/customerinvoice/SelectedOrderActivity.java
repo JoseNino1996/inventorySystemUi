@@ -10,9 +10,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jbnjr.inventorysystem.R;
 import com.jbnjr.inventorysystem.adapters.customerinvoice.ProductOrderListAdapter;
+import com.jbnjr.inventorysystem.model.customerinvoice.CustomerInvoice;
 import com.jbnjr.inventorysystem.model.customerinvoice.ProductOrder;
 
 import java.util.ArrayList;
@@ -25,7 +27,8 @@ public class SelectedOrderActivity  extends AppCompatActivity {
     private TextView txtAmountDue;
     private List<ProductOrder> productOrderList ;
     private  ProductOrderListAdapter productOrderListAdapter;
-
+    private CustomerInvoice customerInvoice;
+    private Intent intent;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,22 +39,41 @@ public class SelectedOrderActivity  extends AppCompatActivity {
             txtAmountDue = findViewById(R.id.txtAmountDue);
             btnConfirm = findViewById(R.id.btnConfirm);
             lvSelectedOrders = findViewById(R.id.lvSelectedProducts);
-            Intent intent = getIntent();
 
-            productOrderList = intent.getParcelableArrayListExtra("selectedListOfOrders");
+            intent   = getIntent();
+
+
         }
     }
 
+
+    private  boolean hasCustomerInvoice() {
+        if(intent.hasExtra("customerInvoice")) {
+            customerInvoice = intent.getParcelableExtra("customerInvoice");
+            return  true;
+        }
+
+        return false;
+    }
     @Override
     protected void onResume(){
         super.onResume();
 
-        if(productOrderList != null) {
-            loadSelectedOrders();
+
+
+        if(hasCustomerInvoice()) {
+            productOrderList = customerInvoice.getProductOrderList();
+
+        } else {
+            productOrderList = intent.getParcelableArrayListExtra("selectedListOfOrders");
         }
 
 
 
+
+        if(productOrderList != null) {
+            loadSelectedOrders();
+        }
 
         lvSelectedOrders.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -78,12 +100,17 @@ public class SelectedOrderActivity  extends AppCompatActivity {
             Intent intent = new Intent(SelectedOrderActivity.this, ConfirmationOrderActivity.class);
             double amount = Double.parseDouble(txtAmountDue.getText().toString());
                 if(productOrderList != null) {
-                    intent.putParcelableArrayListExtra("selectedOrders", (ArrayList<? extends Parcelable>) productOrderList);
 
-                    intent.putExtra("amountDue", amount);
+                    if(hasCustomerInvoice()) {
+                        customerInvoice.setProductOrderList(productOrderList);
+                        customerInvoice.setAmountDue(amount);
+                        intent.putExtra("customerInvoice", customerInvoice);
 
+                    } else {
+                        intent.putParcelableArrayListExtra("selectedOrders", (ArrayList<? extends Parcelable>) productOrderList);
+                        intent.putExtra("amountDue", amount);
+                    }
                     startActivity(intent);
-                } else {
 
                 }
             }
@@ -92,8 +119,8 @@ public class SelectedOrderActivity  extends AppCompatActivity {
 
     @Override
     public  void finish() {
-        Intent intent = new Intent();
 
+        Intent intent = new Intent();
         intent.putParcelableArrayListExtra("backSelectedListOfOrders", (ArrayList<? extends Parcelable>) productOrderList);
         setResult(RESULT_OK, intent);
         super.finish();

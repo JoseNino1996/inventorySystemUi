@@ -32,11 +32,12 @@ public class ConfirmationOrderActivity extends AppCompatActivity {
     private Customer customer;
     private CustomerApi customerApi;
     private double  amountDue;
-
     private List<ProductOrder> productOrderList;
     private CustomerInvoice customerInvoice;
     private CustomerInvoiceApi customerInvoiceApi;
     private Button btnSearchCustomer,btnCompleteTransaction;
+
+    private Intent intent;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,14 +52,20 @@ public class ConfirmationOrderActivity extends AppCompatActivity {
             btnSearchCustomer = findViewById(R.id.btnFindCustomerById);
             txtInputCustomerId = findViewById(R.id.txtInputCustomerId);
             btnCompleteTransaction = findViewById(R.id.btnCompleteTransaction);
+
+
         }
     }
+
+
 
     @Override
     protected  void onResume() {
         super.onResume();
 
         displayInvoice();
+
+
 
         btnSearchCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,17 +85,21 @@ public class ConfirmationOrderActivity extends AppCompatActivity {
                     Toast.makeText(ConfirmationOrderActivity.this, "null product order list", Toast.LENGTH_LONG).show();
                     return;
                 }
+
                 if(amountTendered >= amountDue) {
-                    CustomerInvoice customerInvoice = new CustomerInvoice();
-                    customerInvoice.setDate(null);
-                    customerInvoice.setAmountDue(amountDue);
-                    customerInvoice.setAmountTendered(amountTendered);
-                    customerInvoice.setCustomer(customer);
-                    customerInvoice.setProductOrderList(productOrderList);
-                    saveInvoice(customerInvoice);
+                    if(customerInvoice != null) {
 
-                } else {
-
+                        Toast.makeText(ConfirmationOrderActivity.this, customerInvoice.toString(), Toast.LENGTH_LONG).show();
+                        updateInvoice(customerInvoice);
+                    } else {
+                        CustomerInvoice customerInvoice = new CustomerInvoice();
+                        customerInvoice.setDate(null);
+                        customerInvoice.setAmountDue(amountDue);
+                        customerInvoice.setAmountTendered(amountTendered);
+                        customerInvoice.setCustomer(customer);
+                        customerInvoice.setProductOrderList(productOrderList);
+                        saveInvoice(customerInvoice);
+                    }
                 }
             }
         });
@@ -98,8 +109,16 @@ public class ConfirmationOrderActivity extends AppCompatActivity {
 
         private void displayInvoice() {
             Intent intent = getIntent();
-            productOrderList = intent.getParcelableArrayListExtra("selectedOrders");
-             amountDue =intent.getDoubleExtra("amountDue", 0);
+            if(intent.hasExtra("customerInvoice")) {
+                customerInvoice = intent.getParcelableExtra("customerInvoice");
+                amountDue = customerInvoice.getAmountDue();
+                productOrderList = customerInvoice.getProductOrderList();
+                txtCustomerName.setText(customerInvoice.getCustomer().getName());
+            } else {
+                productOrderList = intent.getParcelableArrayListExtra("selectedOrders");
+                amountDue = intent.getDoubleExtra("amountDue", 0);
+
+            }
 
             txtDisplayAmountDue.setText(Double.toString(amountDue));
 
@@ -128,6 +147,28 @@ public class ConfirmationOrderActivity extends AppCompatActivity {
         });
     }
 
+    private void updateInvoice(CustomerInvoice customerInvoice) {
+        customerInvoiceApi = CustomerInvoiceClient.getRetrofitClient().getCustomerInvoiceApi();
+
+        Call<CustomerInvoice> call = customerInvoiceApi.update(customerInvoice);
+
+        call.enqueue(new Callback<CustomerInvoice>() {
+            @Override
+            public void onResponse(Call<CustomerInvoice> call, Response<CustomerInvoice> response) {
+                Toast.makeText(ConfirmationOrderActivity.this, response.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(ConfirmationOrderActivity.this, response.message(), Toast.LENGTH_LONG).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<CustomerInvoice> call, Throwable t) {
+
+            }
+        });
+
+
+
+    }
 
     private void saveInvoice(CustomerInvoice customerInvoice)   {
         customerInvoiceApi = CustomerInvoiceClient.getRetrofitClient().getCustomerInvoiceApi();
